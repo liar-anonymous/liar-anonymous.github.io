@@ -147,60 +147,137 @@
       <div class="columns is-centered has-text-centered">
         <div class="column is-four-fifths">
           <h2 class="title is-3">Mechanistic Interpretability</h2>
-          <figure class="image is-16by9">
-            <!-- Replace with actual image path -->
-            <img src="static/images/mech_interp.png" alt="Mechanistic Interpretability Diagram">
-          </figure>
-          <div class="content has-text-justified">
-            <p>
-              We analyze how attention heads interact with internal token structures to reveal interpretable circuits.
-              Our framework identifies alignment between specific attention patterns and latent linguistic or logical functions,
-              revealing how models compute token-level operations that correlate with semantic decomposition.
-            </p>
+          
+          <!-- Subsection 1: LogitLens -->
+          <div class="content">
+            <h3 class="title is-4">LogitLens Reveals Rehearsal at Dummy Tokens</h3>
+            <figure class="image is-16by9">
+              <!-- Replace with actual image path -->
+              <img src="static/images/logit_lens.png" alt="LogitLens Analysis">
+            </figure>
+            <div class="content has-text-justified">
+              <p>
+                Using LogitLens analysis, we uncover how models rehearse deceptive responses through dummy tokens before generation.
+                This reveals a systematic pattern where false information is prepared and refined in intermediate layers.
+              </p>
+            </div>
           </div>
+
+          <!-- Subsection 2: Causal Interventions -->
+          <div class="content">
+            <h3 class="title is-4">Causal Interventions Localize Lying Circuits</h3>
+            <figure class="image is-16by9">
+              <!-- Replace with actual image path -->
+              <img src="static/images/causal_interventions.png" alt="Causal Intervention Analysis">
+            </figure>
+            <div class="content has-text-justified">
+              <p>
+                Through targeted causal interventions, we identify specific neural circuits responsible for deceptive behavior.
+                By ablating and modifying these circuits, we demonstrate their direct role in generating false statements.
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
   
       <br><br>
   
-      <!-- Section 2: Lying Signal -->
+      <!-- Section 2: Controlling Lying in LLMs -->
       <div class="columns is-centered has-text-centered">
         <div class="column is-four-fifths">
-          <h2 class="title is-3">Lying Signal</h2>
-          <figure class="image is-16by9">
-            <!-- Replace with actual image path -->
-            <img src="static/images/lying_signal.png" alt="Lying Signal Visualization">
-          </figure>
-          <div class="content has-text-justified">
-            <p>
-              We introduce the concept of a "lying signal"—a learned internal feature that strongly correlates with
-              factual misalignment or deliberate falsehood in output tokens. By probing this signal, we show that models
-              encode a surprisingly explicit internal representation of truthfulness, even when conditioned to produce deceptive outputs.
-            </p>
+          <h2 class="title is-3">Controlling Lying in LLMs</h2>
+          
+          <!-- Subsection 1: Identifying Neural Directions -->
+          <div class="content">
+            <h3 class="title is-4">Identifying Neural Directions</h3>
+            <figure class="image is-16by9">
+              <!-- Replace with actual image path -->
+              <img src="static/images/lying_signal.png" alt="Neural Directions Visualization">
+            </figure>
+            <div class="content has-text-justified">
+              <p>
+                We identify specific neural directions that correlate strongly with truthful or deceptive outputs. 
+                These directions represent learned internal features that encode the model's propensity for honesty or deception.
+              </p>
+            </div>
           </div>
+
+          <!-- Subsection 2: Controlling Behavior -->
+          <div class="content">
+            <h3 class="title is-4">Controlling Behavior</h3>
+            <div class="content has-text-justified">
+              <p>
+                By manipulating these identified neural directions, we demonstrate the ability to control the model's 
+                tendency towards truthfulness or deception. This provides a mechanism for steering the model's behavior 
+                during inference.
+              </p>
+            </div>
+          </div>
+
+          <!-- Subsection 3: Impact of Steering in Latent Space -->
+          <div class="content">
+            <h3 class="title is-4">Impact of Steering in Latent Space</h3>
+            <div class="content has-text-justified">
+              <p>
+                We analyze how steering the model in latent space along these truthfulness directions impacts the 
+                generated outputs. This reveals the extent to which we can influence the model's behavior and the 
+                trade-offs involved in such interventions.
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
   
       <br><br>
   
-      <!-- Section 3: Generation Examples -->
+      <!-- Section 3: Lies in Complex Conversational Settings -->
       <div class="columns is-centered has-text-centered">
         <div class="column is-four-fifths">
-          <h2 class="title is-3">Generation Examples</h2>
-          <figure class="image is-16by9">
-            <!-- Replace with actual image path -->
-            <img src="static/images/gen_examples.png" alt="Generation Examples">
-          </figure>
+          <h2 class="title is-3">Lies in Complex Conversational Settings</h2>
+          
+          <!-- Subsection 1: Controlling Different Types of Lies -->
+          <div class="content">
+            <h3 class="title is-4">Controlling Different Types of Lies</h3>
+            <div class="content has-text-justified">
+              <p>
+                We explore how different types of lies manifest in conversational AI, from simple factual misstatements to 
+                more nuanced forms of deception. Our analysis reveals methods to identify and control these varying forms of 
+                untruthful behavior in language models.
+              </p>
+            </div>
+          </div>
+
+          <!-- Subsection 2: Implicit Lying Intent -->
+          <div class="content">
+            <h3 class="title is-4">Implicit Lying Intent</h3>
+            <div class="content has-text-justified">
+              <p>
+                Beyond explicit falsehoods, we investigate how language models can engage in subtle forms of deception 
+                through implication and omission. This research uncovers the mechanisms behind implicit lying behaviors 
+                and develops approaches to detect and manage these more sophisticated forms of untruthfulness.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  
+      <br><br>
+
+      <!-- Section 4: Trade-offs between Lying and General Capabilities -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Trade-offs between Lying and General Capabilities</h2>
           <div class="content has-text-justified">
             <p>
-              We provide representative generation outputs under different configurations, including honest and deceptive settings.
-              The examples demonstrate how the model’s internal mechanisms reflect in observable behavior, and how our interpretability methods
-              can diagnose and control these behaviors during inference.
+              We examine the complex relationship between a model's tendency to lie and its performance on various end tasks. Our research reveals that while reducing lying behaviors can improve truthfulness, it may come at the cost of reduced performance in areas like creative writing, storytelling, and certain types of problem-solving. We analyze these trade-offs quantitatively and propose methods to balance truthfulness with maintaining high task performance across different applications.
             </p>
           </div>
         </div>
       </div>
-  
+       
     </div>
   </section>
 
