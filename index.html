@@ -272,7 +272,37 @@
           <h2 class="title is-3">Trade-offs between Lying and General Capabilities</h2>
           <div class="content has-text-justified">
             <p>
-              We examine the complex relationship between a model's tendency to lie and its performance on various end tasks. Our research reveals that while reducing lying behaviors can improve truthfulness, it may come at the cost of reduced performance in areas like creative writing, storytelling, and certain types of problem-solving. We analyze these trade-offs quantitatively and propose methods to balance truthfulness with maintaining high task performance across different applications.
+              <div class="has-text-centered">
+                <span class="has-text-info-dark has-text-weight-semibold is-size-5">Can we disable an LLM's ability to lie without compromising its other capabilities?</span>
+              </div>
+              <br>
+              We investigate this critical question by examining whether mitigating lying capabilities impacts other general capabilities of language models. Our experiments suggest there may be some overlap between lying-related neurons and those involved in creative/hypothetical thinking.
+            </p>
+          </div>
+            <div class="table-container">
+              <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>λ (Steering Coefficient)</th>
+                    <th>-0.5<br><small>(more lying)</small></th>
+                    <th>0.0<br><small>(baseline)</small></th>
+                    <th>0.5<br><small>(more honesty)</small></th>
+                    <th>1.0</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MMLU Accuracy</td>
+                    <td>0.571</td>
+                    <td>0.613</td>
+                    <td>0.594</td>
+                    <td>0.597</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="is-size-7 mt-2">
+              Table: Impact of steering vectors on Llama-3.1-8B-Instruct model's performance on MMLU. The model is adjusted using h⁽ˡ⁾ ← h⁽ˡ⁾ + λvₕ⁽ˡ⁾ at layers l∈L. The vectors vₕ⁽ˡ⁾ are oriented to honesty.
             </p>
           </div>
         </div>
