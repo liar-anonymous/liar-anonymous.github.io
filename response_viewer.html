@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Response Viewer</title>
+    <!-- The existing CSS links from your main page -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        /* Custom styles for the interactive block */
+        .response-viewer {
+            border: 1px solid #dbdbdb;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            background-color: #ffffff;
+            box-shadow: 0 0.5em 1em -0.125em rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.02);
+        }
+        .response-columns {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .response-column {
+            flex: 1;
+            min-width: 300px; /* Prevent columns from getting too narrow */
+            border: 1px solid #e5e5e5;
+            padding: 1rem;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        .response-column h4 {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .response-content {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Start of the interactive sub-block -->
+    <div id="interactive-subblock" class="container response-viewer">
+        <h3 class="title is-4">Response Viewer</h3>
+
+        <!-- Dropdown for Question Type -->
+        <div class="field">
+            <label class="label" for="type-select">Select Question Type:</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select id="type-select"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subtitle for the selected question -->
+        <h4 class="subtitle is-5" id="question-subtitle"></h4>
+
+        <!-- Container for side-by-side responses -->
+        <div class="response-columns" id="responses-container">
+            <div class="response-column" id="response-col-1">
+                <h4>Response 1</h4>
+                <div class="field">
+                    <label class="label is-small" for="num-zeroed-select-1">Number of Zeroed Values:</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select id="num-zeroed-select-1"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="response-content" id="response-content-1">
+                    <p>Select a question type.</p>
+                </div>
+            </div>
+            <div class="response-column" id="response-col-2">
+                <h4>Response 2</h4>
+                 <div class="field">
+                    <label class="label is-small" for="num-zeroed-select-2">Number of Zeroed Values:</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select id="num-zeroed-select-2"></select>
+                        </div>
+                    </div>
+                </div>
+                 <div class="response-content" id="response-content-2">
+                    <p>Select a question type.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of the interactive sub-block -->
+
+    <!-- JavaScript to power the block -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const typeSelect = document.getElementById('type-select');
+            const questionSubtitle = document.getElementById('question-subtitle');
+
+            const numZeroedSelect1 = document.getElementById('num-zeroed-select-1');
+            const numZeroedSelect2 = document.getElementById('num-zeroed-select-2');
+            const responseContent1 = document.getElementById('response-content-1');
+            const responseContent2 = document.getElementById('response-content-2');
+
+            let requestsData = [];
+            let responsesData = [];
+            
+            // Fetches and loads YAML data
+            async function loadData() {
+                try {
+                    const [requestsResponse, responsesResponse] = await Promise.all([
+                        fetch('static/yamls/requests.yaml'),
+                        fetch('static/yamls/response_headablate_Llama-3.1-8B-Instruct.yaml')
+                    ]);
+
+                    if (!requestsResponse.ok || !responsesResponse.ok) {
+                        throw new Error('Failed to fetch YAML files.');
+                    }
+
+                    const requestsText = await requestsResponse.text();
+                    const responsesText = await responsesResponse.text();
+                    
+                    requestsData = jsyaml.load(requestsText);
+                    responsesData = jsyaml.load(responsesText);
+                    
+                    populateTypeDropdown();
+                    initializeView();
+
+                } catch (error) {
+                    console.error("Error loading data:", error);
+                    questionSubtitle.textContent = "Error loading data. Please check the console.";
+                }
+            }
+
+            // Populates the question type dropdown
+            function populateTypeDropdown() {
+                const types = [...new Set(requestsData.map(req => req.type))];
+                typeSelect.innerHTML = types.map(type => `<option value="${type}">${type}</option>`).join('');
+            }
+            
+            // Initializes the view or updates it based on type selection
+            function initializeView() {
+                const selectedType = typeSelect.value;
+                const questionsOfType = requestsData.filter(req => req.type === selectedType);
+
+                if (questionsOfType.length > 0) {
+                    const currentQuestion = questionsOfType[0].question;
+                    questionSubtitle.textContent = `Question: "${currentQuestion}"`;
+                    setupResponseColumns(currentQuestion);
+                } else {
+                     questionSubtitle.textContent = 'No questions for this type.';
+                     clearResponseColumns();
+                }
+            }
+
+            // Sets up the dropdowns and initial display for the response columns
+            function setupResponseColumns(question) {
+                const relevantResponses = responsesData.filter(res => res.question === question);
+                const uniqueNumZeroed = [...new Set(relevantResponses.map(res => res.num_zeroed))].sort((a,b) => a-b);
+                console.log(relevantResponses, uniqueNumZeroed);
+                // Populate both dropdowns
+                const optionsHtml = uniqueNumZeroed.map(num => `<option value="${num}">${num}</option>`).join('');
+                numZeroedSelect1.innerHTML = optionsHtml;
+                numZeroedSelect2.innerHTML = optionsHtml;
+                
+                // If there are at least two options, randomly select two different ones
+                if (uniqueNumZeroed.length >= 2) {
+                    // let index1 = Math.floor(Math.random() * uniqueNumZeroed.length);
+                    // let index2;
+                    // do {
+                    //     index2 = Math.floor(Math.random() * uniqueNumZeroed.length);
+                    // } while (index1 === index2);
+
+                    // simply make index1 and index2 argmin and argmax of uniqueNumZeroed
+                    const index1 = uniqueNumZeroed.indexOf(Math.min(...uniqueNumZeroed));
+                    const index2 = uniqueNumZeroed.indexOf(Math.max(...uniqueNumZeroed));
+
+                    numZeroedSelect1.value = uniqueNumZeroed[index1];
+                    numZeroedSelect2.value = uniqueNumZeroed[index2];
+                } else if (uniqueNumZeroed.length === 1) {
+                    // If only one option, set both to it
+                    numZeroedSelect1.value = uniqueNumZeroed[0];
+                    numZeroedSelect2.value = uniqueNumZeroed[0];
+                }
+                
+                // Update the display for both columns
+                updateResponseDisplay(1);
+                updateResponseDisplay(2);
+            }
+
+            // Updates a single response column based on its dropdown selection
+            function updateResponseDisplay(columnIndex) {
+                const selectEl = (columnIndex === 1) ? numZeroedSelect1 : numZeroedSelect2;
+                const contentEl = (columnIndex === 1) ? responseContent1 : responseContent2;
+                
+                const selectedQuestion = questionSubtitle.textContent.replace('Question: "', '').replace('"', '');
+                const selectedNumZeroed = parseInt(selectEl.value, 10);
+
+                if (isNaN(selectedNumZeroed)) {
+                    contentEl.innerHTML = `<p>No 'num_zeroed' values available.</p>`;
+                    return;
+                }
+
+                const possibleResponses = responsesData.filter(res => 
+                    res.question === selectedQuestion && res.num_zeroed === selectedNumZeroed
+                );
+
+                if (possibleResponses.length > 0) {
+                    // Pick a random response if multiple match
+                    const responseToShow = possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
+                    contentEl.innerHTML = `<p>${responseToShow.response}</p>`;
+                } else {
+                    contentEl.innerHTML = `<p>No response found for this selection.</p>`;
+                }
+            }
+            
+            // Clears the response columns when no data is available
+            function clearResponseColumns() {
+                numZeroedSelect1.innerHTML = '';
+                numZeroedSelect2.innerHTML = '';
+                responseContent1.innerHTML = `<p>Select a question type.</p>`;
+                responseContent2.innerHTML = `<p>Select a question type.</p>`;
+            }
+
+            // Event Listeners
+            typeSelect.addEventListener('change', initializeView);
+            numZeroedSelect1.addEventListener('change', () => updateResponseDisplay(1));
+            numZeroedSelect2.addEventListener('change', () => updateResponseDisplay(2));
+
+            // Initial data load
+            loadData();
+        });
+    </script>
+
+</body>
+</html>
