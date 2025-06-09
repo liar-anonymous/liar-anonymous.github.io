@@ -452,12 +452,35 @@
           <!-- Subsection 3: Impact of Steering in Latent Space -->
           <div class="content">
             <h3 class="title is-4" id="impact-steering">Impact of Steering in Latent Space</h3>
-            <div class="content">
-              <p>
-                We analyze how steering the model in latent space along these truthfulness directions impacts the
-                generated outputs. This reveals the extent to which we can influence the model's behavior and the
-                trade-offs involved in such interventions.
-              </p>
+            <div class="columns">
+              <div class="column is-6">
+                <p>
+                  On llama-3.1-8B-Instruct we pass in different prompts and visualize their distribution in the latent space.
+                </p>
+                <div class="box has-background-white-ter p-4">
+                  <p class="has-text-weight-bold mb-2">Observations:</p>
+                  <p class="mb-3">
+                    <span class="has-text-weight-medium">(i) Natural Separation:</span> The model internally represents 
+                    <span class="tag is-success is-light">✅ Truth</span>, 
+                    <span class="tag is-warning is-light">❌ Hallucination</span>, and
+                    <span class="tag is-danger is-light">🤥 Lie</span> responses differently. Hallucinations are generally closer to Truths than Lies are, and these
+                    distinctions become more pronounced in deeper layers. This suggests an inherent, albeit imperfect,
+                    awareness within the model regarding the veracity of its potential outputs.
+                  </p>
+                  <p>
+                    <span class="has-text-weight-medium">(ii) Steering Mechanism:</span>
+                    Applying the <span class="tag is-info is-light">🠐 Steering vector</span> effectively shifts the distribution of "Lie" states
+                    towards the "Truth" states. This shift is most evident in the steered layers (L = {10, 11, 12, 13, 14}
+                    in this visualization). While the steering at these layers moves the <span class="tag is-primary is-light">🔧 Honesty control</span> set partway, 
+                    subsequent unsteered layers appear to naturally continue this trajectory, pulling the representations
+                    further towards the "Truth" cluster.
+                  </p>
+                </div>
+              </div>
+              <div class="column is-6">
+                <iframe src="static/images/pca_plot.html" style="width: 100%; height: 750px; border: none; border-radius: 6px;" 
+                  title="PCA Visualization" loading="lazy"></iframe>
+              </div>
             </div>
           </div>
 
