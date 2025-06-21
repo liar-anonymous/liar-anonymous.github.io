@@ -109,6 +109,7 @@
         <div id="prompt-container" class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center">
             <p class="text-xl md:text-2xl font-mono leading-relaxed text-gray-800">
                 ...Answer the question <span id="prompt-intent" class="intent-text font-bold">with a lie</span>. What is the capital of <span id="prompt-subject" class="subject-text font-bold">Australia</span>? <span id="prompt-dummies" class="dummies-text font-bold">&lt;|eot_id|&gt;&lt;start_header_id&gt;assistant&lt;|end_header_id&gt;</span><span id="prompt-generation" class="generation-text inline-block">\n\n<span class="blinking-cursor"></span></span>
+                <br>...Provide an <span id="prompt-intent" class="intent-text font-bold">incorrect answer</span>. What sports does <span id="prompt-subject" class="subject-text font-bold">Micheal Jordan</span> play? <span id="prompt-dummies" class="dummies-text font-bold">&lt;|eot_id|&gt;&lt;start_header_id&gt;assistant&lt;|end_header_id&gt;</span><span id="prompt-generation" class="generation-text inline-block">\n\n<span class="blinking-cursor"></span></span>
             </p>
         </div>
 
@@ -134,19 +135,19 @@
                 <!-- Path 1: intent -> dummies (New curved path) -->
                 <path id="arrow-path1" class="info-arrow" d="M 100 5 V 85 A 10 10 0 0 0 110 95 H 460 A 10 10 0 0 0 470 85 V 5" marker-end="url(#arrowhead)"/>
                 <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
-                    <textPath href="#arrow-path1" startOffset="50%" text-anchor="middle">1</textPath>
+                    <textPath href="#arrow-path1" startOffset="50%" text-anchor="middle">Path 1</textPath>
                 </text>
 
                 <!-- Path 2: subject -> dummies (New curved path) -->
                 <path id="arrow-path2" class="info-arrow" d="M 300 5 V 65 A 10 10 0 0 0 310 75 H 520 A 10 10 0 0 0 530 65 V 5" marker-end="url(#arrowhead)"/>
                  <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
-                    <textPath href="#arrow-path2" startOffset="50%" text-anchor="middle">2</textPath>
+                    <textPath href="#arrow-path2" startOffset="50%" text-anchor="middle">Path 2</textPath>
                 </text>
 
                 <!-- Path 3: dummies -> generation (New curved path) -->
                 <path id="arrow-path3" class="info-arrow" d="M 500 5 V 45 A 10 10 0 0 0 510 55 H 690 A 10 10 0 0 0 700 45 V 5" marker-end="url(#arrowhead)"/>
                  <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
-                    <textPath href="#arrow-path3" startOffset="50%" text-anchor="middle">3</textPath>
+                    <textPath href="#arrow-path3" startOffset="50%" text-anchor="middle">Path 3</textPath>
                 </text>
             </svg>
         </div>
@@ -154,16 +155,28 @@
         <!-- Explanations Section -->
         <div id="explanations" class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div id="text-path1" class="explanation-box p-4 bg-white rounded-lg border">
-                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 1: Intent & Subject to Dummies</h3>
-                <p class="text-gray-600">The model understands the <span class="intent-text font-semibold">intent</span> is to lie and the <span class="subject-text font-semibold">subject</span> is Australia's capital. This context is encoded and passed forward.</p>
+                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 1: Intent to Dummy Attention</h3>
+                <p class="text-gray-600">Around layer 11-12, <span class="dummies-text font-semibold">dummy tokens</span> attend to the <span class="intent-text font-semibold">explicit lying intent</span> keywords. Blocking this attention pathway disrupts the lying process. This is a critical component of how the model understands it needs to generate a false response.</p>
+                <div class="mt-4">
+                    <img src="static/images/intent2dummy-liar.png" alt="Intent to Dummy Attention Chart" class="mx-auto w-full max-w-xs">
+                    <p class="text-xs text-gray-500 mt-1">Figure 3c: Impact of blocking attention from intent tokens to dummy tokens</p>
+                </div>
             </div>
             <div id="text-path2" class="explanation-box p-4 bg-white rounded-lg border">
-                 <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 2: Intent & Subject to Dummies</h3>
-                <p class="text-gray-600">This path also shows the combination of <span class="intent-text font-semibold">intent</span> and <span class="subject-text font-semibold">subject</span>, highlighting how both concepts are necessary inputs for the next step.</p>
+                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 2: Subject to Dummy Attention</h3>
+                <p class="text-gray-600">Around layer 10, <span class="dummies-text font-semibold">dummy tokens</span> attend to the <span class="subject-text font-semibold">subject</span> of the question. This attention pathway is essential for the model to know what to lie about. Blocking this pathway significantly degrades the lying ability.</p>
+                <div class="mt-4">
+                    <img src="static/images/subject2dummy-liar.png" alt="Subject to Dummy Attention Chart" class="mx-auto w-full max-w-xs">
+                    <p class="text-xs text-gray-500 mt-1">Figure 3b: Impact of blocking attention from subject tokens to dummy tokens</p>
+                </div>
             </div>
             <div id="text-path3" class="explanation-box p-4 bg-white rounded-lg border">
-                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 3: Dummies to Generation</h3>
-                <p class="text-gray-600">Using the combined context, the model moves to the <span class="generation-text font-semibold">generation</span> phase, constrained by the special tokens to produce a fabricated answer.</p>
+                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 3: Information Aggregation</h3>
+                <p class="text-gray-600">The <span class="generation-text font-semibold">final token</span> (which generates the first word of the lie) reads information processed by the <span class="dummies-text font-semibold">dummy tokens</span> primarily around layer 13. The dummy tokens act as a computational scratchpad where subject and intent are integrated.</p>
+                <div class="mt-4">
+                    <img src="static/images/last-attn-liar.png" alt="Last Token Attention Chart" class="mx-auto w-full max-w-xs">
+                    <p class="text-xs text-gray-500 mt-1">Figure 3d: Impact of zeroing attention output at the last token. *The minima at layer 0 leads to the model losing all abilities, which is not dedicated to lying</p>
+                </div>
             </div>
         </div>
     </div>
