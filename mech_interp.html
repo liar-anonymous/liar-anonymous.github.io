@@ -17,6 +17,8 @@
             --subject-color: #22c55e; /* green-500 */
             --dummies-color: #ef4444; /* red-500 */
             --generation-color: #8b5cf6; /* purple-500 */
+            --arrow-color: #ef4444; /* red-500 for arrows */
+            --arrow-highlight-color: #b91c1c; /* red-700 for arrow highlight */
         }
 
         /* Applying colors to text spans */
@@ -66,20 +68,24 @@
 
         /* SVG arrow styling */
         .info-arrow {
-            stroke: #9ca3af; /* gray-400 */
-            stroke-width: 4;
+            stroke: var(--arrow-color);
+            stroke-width: 2.5;
             transition: all 0.3s ease;
             cursor: pointer;
             fill: none;
         }
 
         .arrow-highlight {
-            stroke: #1f2937; /* gray-800 */
-            stroke-width: 6;
+            stroke: var(--arrow-highlight-color);
+            stroke-width: 4;
+        }
+        
+        #arrowhead polygon {
+             fill: var(--arrow-color);
         }
         
         #arrowhead-highlight polygon {
-             fill: #1f2937; /* gray-800 */
+             fill: var(--arrow-highlight-color);
         }
 
         /* Paragraph highlight (persistent) */
@@ -89,8 +95,8 @@
              transition: all 0.3s ease-in-out;
         }
         .text-highlight {
-            background-color: #f3f4f6; /* gray-100 */
-            border-color: #9ca3af; /* gray-400 */
+            background-color: #fef2f2; /* red-50 */
+            border-color: #fca5a5; /* red-300 */
             transform: translateY(-4px);
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
@@ -102,7 +108,7 @@
         <!-- Prompt Section -->
         <div id="prompt-container" class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center">
             <p class="text-xl md:text-2xl font-mono leading-relaxed text-gray-800">
-                Answer the question <span id="prompt-intent" class="intent-text font-bold">with a lie</span>. What is the capital of <span id="prompt-subject" class="subject-text font-bold">Australia</span>? <span id="prompt-dummies" class="dummies-text font-bold">&lt;dummies&gt;</span><span id="prompt-generation" class="generation-text inline-block"><span class="blinking-cursor"></span></span>
+                ...Answer the question <span id="prompt-intent" class="intent-text font-bold">with a lie</span>. What is the capital of <span id="prompt-subject" class="subject-text font-bold">Australia</span>? <span id="prompt-dummies" class="dummies-text font-bold">&lt;|eot_id|&gt;&lt;start_header_id&gt;assistant&lt;|end_header_id&gt;</span><span id="prompt-generation" class="generation-text inline-block">\n\n<span class="blinking-cursor"></span></span>
             </p>
         </div>
 
@@ -115,38 +121,49 @@
         </div>
 
         <!-- Arrows Visualization -->
-        <div id="arrow-container" class="relative h-24 w-full">
-            <svg class="absolute inset-0 w-full h-full" viewbox="0 0 800 90" preserveAspectRatio="none">
+        <div id="arrow-container" class="relative" style="height: 120px;">
+            <svg class="absolute inset-0 w-full h-full" viewbox="0 0 800 120" preserveAspectRatio="none">
                 <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af" />
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                        <polygon points="0 0, 10 3.5, 0 7" />
                     </marker>
-                    <marker id="arrowhead-highlight" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#1f2937" />
+                    <marker id="arrowhead-highlight" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                        <polygon points="0 0, 10 3.5, 0 7" />
                     </marker>
                 </defs>
-                <!-- Path 1: intent -> dummies -->
-                <path id="arrow-path1" class="info-arrow" d="M 100 5 V 75 Q 100 85 110 85 H 490 Q 500 85 500 75 V 5" marker-end="url(#arrowhead)"/>
-                <!-- Path 2: subject -> dummies -->
-                <path id="arrow-path2" class="info-arrow" d="M 300 5 V 45 Q 300 55 310 55 H 490 Q 500 55 500 45 V 5" marker-end="url(#arrowhead)"/>
-                <!-- Path 3: dummies -> generation -->
-                <path id="arrow-path3" class="info-arrow" d="M 500 5 V 25 Q 500 35 510 35 H 690 Q 700 35 700 25 V 5" marker-end="url(#arrowhead)"/>
+                <!-- Path 1: intent -> dummies (New curved path) -->
+                <path id="arrow-path1" class="info-arrow" d="M 100 5 V 85 A 10 10 0 0 0 110 95 H 460 A 10 10 0 0 0 470 85 V 5" marker-end="url(#arrowhead)"/>
+                <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
+                    <textPath href="#arrow-path1" startOffset="50%" text-anchor="middle">1</textPath>
+                </text>
+
+                <!-- Path 2: subject -> dummies (New curved path) -->
+                <path id="arrow-path2" class="info-arrow" d="M 300 5 V 65 A 10 10 0 0 0 310 75 H 520 A 10 10 0 0 0 530 65 V 5" marker-end="url(#arrowhead)"/>
+                 <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
+                    <textPath href="#arrow-path2" startOffset="50%" text-anchor="middle">2</textPath>
+                </text>
+
+                <!-- Path 3: dummies -> generation (New curved path) -->
+                <path id="arrow-path3" class="info-arrow" d="M 500 5 V 45 A 10 10 0 0 0 510 55 H 690 A 10 10 0 0 0 700 45 V 5" marker-end="url(#arrowhead)"/>
+                 <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
+                    <textPath href="#arrow-path3" startOffset="50%" text-anchor="middle">3</textPath>
+                </text>
             </svg>
         </div>
 
         <!-- Explanations Section -->
         <div id="explanations" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div id="text-path1" class="explanation-box p-4 bg-white rounded-lg">
-                <h3 class="font-bold text-lg mb-2" style="color: var(--intent-color);">Path: Intent to Dummies</h3>
-                <p class="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod malesuada. Nullam ac erat ante.</p>
+            <div id="text-path1" class="explanation-box p-4 bg-white rounded-lg border">
+                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 1: Intent & Subject to Dummies</h3>
+                <p class="text-gray-600">The model understands the <span class="intent-text font-semibold">intent</span> is to lie and the <span class="subject-text font-semibold">subject</span> is Australia's capital. This context is encoded and passed forward.</p>
             </div>
-            <div id="text-path2" class="explanation-box p-4 bg-white rounded-lg">
-                <h3 class="font-bold text-lg mb-2" style="color: var(--subject-color);">Path: Subject to Dummies</h3>
-                <p class="text-gray-600">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet.</p>
+            <div id="text-path2" class="explanation-box p-4 bg-white rounded-lg border">
+                 <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 2: Intent & Subject to Dummies</h3>
+                <p class="text-gray-600">This path also shows the combination of <span class="intent-text font-semibold">intent</span> and <span class="subject-text font-semibold">subject</span>, highlighting how both concepts are necessary inputs for the next step.</p>
             </div>
-            <div id="text-path3" class="explanation-box p-4 bg-white rounded-lg">
-                <h3 class="font-bold text-lg mb-2" style="color: var(--generation-color);">Path: Dummies to Generation</h3>
-                <p class="text-gray-600">Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae.</p>
+            <div id="text-path3" class="explanation-box p-4 bg-white rounded-lg border">
+                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 3: Dummies to Generation</h3>
+                <p class="text-gray-600">Using the combined context, the model moves to the <span class="generation-text font-semibold">generation</span> phase, constrained by the special tokens to produce a fabricated answer.</p>
             </div>
         </div>
     </div>
@@ -172,18 +189,18 @@
 
             // --- Function to set the persistent active path ---
             const setActivePath = (targetIdBase) => {
-                if (activePathId === targetIdBase) return; // Do nothing if already active
+                // Deactivate all paths first
+                ['path1', 'path2', 'path3'].forEach(pathId => {
+                    const text = document.getElementById(`text-${pathId}`);
+                    const arrow = document.getElementById(`arrow-${pathId}`);
+                    if (text) text.classList.remove('text-highlight');
+                    if (arrow) {
+                        arrow.classList.remove('arrow-highlight');
+                        arrow.setAttribute('marker-end', 'url(#arrowhead)');
+                    }
+                });
 
-                // Deactivate previous path
-                const prevText = document.getElementById(`text-${activePathId}`);
-                const prevArrow = document.getElementById(`arrow-${activePathId}`);
-                if (prevText && prevArrow) {
-                    prevText.classList.remove('text-highlight');
-                    prevArrow.classList.remove('arrow-highlight');
-                    prevArrow.setAttribute('marker-end', 'url(#arrowhead)');
-                }
-
-                // Activate new path
+                // Activate the target path
                 const newText = document.getElementById(`text-${targetIdBase}`);
                 const newArrow = document.getElementById(`arrow-${targetIdBase}`);
                 if (newText && newArrow) {
@@ -200,7 +217,7 @@
                 const promptSpan = document.getElementById(promptId);
                 if (box && promptSpan) {
                     handleTempHighlight(box, promptSpan, 'prompt-highlight'); // Box hovers -> highlights prompt
-                    handleTempHighlight(promptSpan, box, 'box-highlight');    // Prompt hovers -> highlights box
+                    handleTempHighlight(promptSpan, box, 'box-highlight');   // Prompt hovers -> highlights box
                 }
             }
 
@@ -209,12 +226,10 @@
                 const textEl = document.getElementById(`text-${pathBaseId}`);
                 const arrowEl = document.getElementById(`arrow-${pathBaseId}`);
                 
-                if (textEl) {
-                    textEl.addEventListener('mouseenter', () => setActivePath(pathBaseId));
-                }
-                if (arrowEl) {
-                    arrowEl.addEventListener('mouseenter', () => setActivePath(pathBaseId));
-                }
+                const setPath = () => setActivePath(pathBaseId);
+
+                if (textEl) textEl.addEventListener('mouseenter', setPath);
+                if (arrowEl) arrowEl.addEventListener('mouseenter', setPath);
             });
 
             // --- Set the initial active path on load ---
