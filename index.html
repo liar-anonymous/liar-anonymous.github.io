@@ -806,6 +806,16 @@
     #explanations .explanation-box .text-xs {
       text-align: center;
     }
+    
+    /* 减少概念框和箭头之间的间距 */
+    .space-y-6 > * + * {
+      margin-top: 1.5rem;
+    }
+    
+    /* 特别减少概念框和箭头容器之间的间距 */
+    #concept-boxes + #arrow-container {
+      margin-top: 1rem !important;
+    }
   </style>
 </head>
 
