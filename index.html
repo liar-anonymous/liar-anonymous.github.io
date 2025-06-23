@@ -1747,9 +1747,28 @@
       const dropdowns = document.querySelectorAll('.menu-list a.has-dropdown');
       dropdowns.forEach(link => {
         link.addEventListener('click', (e) => {
+          // 阻止默认跳转行为
           e.preventDefault();
+          
           const parentLi = link.parentElement;
           parentLi.classList.toggle('open');
+          
+          // 检查是否点击的是箭头区域（右侧）
+          const rect = link.getBoundingClientRect();
+          const clickX = e.clientX;
+          const arrowAreaStart = rect.right - 30; // 箭头区域大约30px宽
+          
+          if (clickX < arrowAreaStart) {
+            // 点击的是文字区域，执行跳转
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+              const targetElement = document.querySelector(href);
+              if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+              }
+            }
+          }
+          // 如果点击的是箭头区域，只展开/收缩，不跳转
         });
       });
 
