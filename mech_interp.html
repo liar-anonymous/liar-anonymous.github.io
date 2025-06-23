@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Concept Visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Color definitions */
+        :root {
+            --intent-color: #3b82f6; /* blue-500 */
+            --subject-color: #22c55e; /* green-500 */
+            --dummies-color: #ef4444; /* red-500 */
+            --generation-color: #8b5cf6; /* purple-500 */
+            --arrow-color: #ef4444; /* red-500 for arrows */
+            --arrow-highlight-color: #b91c1c; /* red-700 for arrow highlight */
+        }
+
+        /* Applying colors to text spans */
+        .intent-text, .subject-text, .dummies-text, .generation-text {
+            cursor: pointer;
+        }
+        .intent-text { color: var(--intent-color); }
+        .subject-text { color: var(--subject-color); }
+        .dummies-text { color: var(--dummies-color); }
+        .generation-text { color: var(--generation-color); }
+
+        /* Highlight effect for prompt text */
+        .prompt-highlight {
+            background-color: rgba(255, 255, 0, 0.4);
+            border-radius: 4px;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        /* Highlight effect for concept boxes */
+        .concept-box {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .box-highlight {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px rgba(255, 255, 0, 0.7);
+        }
+        
+        /* Blinking cursor effect */
+        .blinking-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.5em;
+            background-color: var(--generation-color);
+            animation: blink 1s step-end infinite;
+            vertical-align: bottom;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            from, to { background-color: transparent; }
+            50% { background-color: var(--generation-color); }
+        }
+        
+        .generation-text.prompt-highlight .blinking-cursor {
+             background-color: yellow;
+        }
+
+        /* SVG arrow styling */
+        .info-arrow {
+            stroke: var(--arrow-color);
+            stroke-width: 2.5;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            fill: none;
+        }
+
+        .arrow-highlight {
+            stroke: var(--arrow-highlight-color);
+            stroke-width: 4;
+        }
+        
+        #arrowhead polygon {
+             fill: var(--arrow-color);
+        }
+        
+        #arrowhead-highlight polygon {
+             fill: var(--arrow-highlight-color);
+        }
+
+        /* Paragraph highlight (persistent) */
+        .explanation-box {
+             cursor: pointer;
+             border: 2px solid transparent;
+             transition: all 0.3s ease-in-out;
+        }
+        .text-highlight {
+            background-color: #fef2f2; /* red-50 */
+            border-color: #fca5a5; /* red-300 */
+            transform: translateY(-4px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-5xl mx-auto space-y-12">
+        <!-- Prompt Section -->
+        <div id="prompt-container" class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center">
+            <p class="text-xl md:text-2xl font-mono leading-relaxed text-gray-800">
+                ...Answer the question <span id="prompt-intent" class="intent-text font-bold">with a lie</span>. What is the capital of <span id="prompt-subject" class="subject-text font-bold">Australia</span>? <span id="prompt-dummies" class="dummies-text font-bold">&lt;|eot_id|&gt;&lt;start_header_id&gt;assistant&lt;|end_header_id&gt;</span><span id="prompt-generation" class="generation-text inline-block">\n\n<span class="blinking-cursor"></span></span>
+                <br>...Provide an <span id="prompt-intent" class="intent-text font-bold">incorrect answer</span>. What sports does <span id="prompt-subject" class="subject-text font-bold">Micheal Jordan</span> play? <span id="prompt-dummies" class="dummies-text font-bold">&lt;|eot_id|&gt;&lt;start_header_id&gt;assistant&lt;|end_header_id&gt;</span><span id="prompt-generation" class="generation-text inline-block">\n\n<span class="blinking-cursor"></span></span>
+            </p>
+        </div>
+
+        <!-- Four Boxes Section -->
+        <div id="concept-boxes" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-white text-center">
+            <div id="box-intent" class="concept-box p-4 rounded-lg shadow font-semibold" style="background-color: var(--intent-color);">intent</div>
+            <div id="box-subject" class="concept-box p-4 rounded-lg shadow font-semibold" style="background-color: var(--subject-color);">subject</div>
+            <div id="box-dummies" class="concept-box p-4 rounded-lg shadow font-semibold" style="background-color: var(--dummies-color);">dummies</div>
+            <div id="box-generation" class="concept-box p-4 rounded-lg shadow font-semibold" style="background-color: var(--generation-color);">generation</div>
+        </div>
+
+        <!-- Arrows Visualization -->
+        <div id="arrow-container" class="relative" style="height: 120px;">
+            <svg class="absolute inset-0 w-full h-full" viewbox="0 0 800 120" preserveAspectRatio="none">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                        <polygon points="0 0, 10 3.5, 0 7" />
+                    </marker>
+                    <marker id="arrowhead-highlight" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                        <polygon points="0 0, 10 3.5, 0 7" />
+                    </marker>
+                </defs>
+                <!-- Path 1: intent -> dummies (New curved path) -->
+                <path id="arrow-path1" class="info-arrow" d="M 100 5 V 85 A 10 10 0 0 0 110 95 H 460 A 10 10 0 0 0 470 85 V 5" marker-end="url(#arrowhead)"/>
+                <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
+                    <textPath href="#arrow-path1" startOffset="50%" text-anchor="middle">Path 1</textPath>
+                </text>
+
+                <!-- Path 2: subject -> dummies (New curved path) -->
+                <path id="arrow-path2" class="info-arrow" d="M 300 5 V 65 A 10 10 0 0 0 310 75 H 520 A 10 10 0 0 0 530 65 V 5" marker-end="url(#arrowhead)"/>
+                 <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
+                    <textPath href="#arrow-path2" startOffset="50%" text-anchor="middle">Path 2</textPath>
+                </text>
+
+                <!-- Path 3: dummies -> generation (New curved path) -->
+                <path id="arrow-path3" class="info-arrow" d="M 500 5 V 45 A 10 10 0 0 0 510 55 H 690 A 10 10 0 0 0 700 45 V 5" marker-end="url(#arrowhead)"/>
+                 <text dy="-10" fill="var(--arrow-color)" font-size="24" font-weight="bold" font-family="Inter, sans-serif">
+                    <textPath href="#arrow-path3" startOffset="50%" text-anchor="middle">Path 3</textPath>
+                </text>
+            </svg>
+        </div>
+
+        <!-- Explanations Section -->
+        <div id="explanations" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div id="text-path1" class="explanation-box p-4 bg-white rounded-lg border">
+                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 1: Intent to Dummy Attention</h3>
+                <p class="text-gray-600">Around layer 11-12, <span class="dummies-text font-semibold">dummy tokens</span> attend to the <span class="intent-text font-semibold">explicit lying intent</span> keywords. Blocking this attention pathway disrupts the lying process. This is a critical component of how the model understands it needs to generate a false response.</p>
+                <div class="mt-4">
+                    <img src="static/images/intent2dummy-liar.png" alt="Intent to Dummy Attention Chart" class="mx-auto w-full max-w-xs">
+                    <p class="text-xs text-gray-500 mt-1">Figure 3c: Impact of blocking attention from intent tokens to dummy tokens</p>
+                </div>
+            </div>
+            <div id="text-path2" class="explanation-box p-4 bg-white rounded-lg border">
+                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 2: Subject to Dummy Attention</h3>
+                <p class="text-gray-600">Around layer 10, <span class="dummies-text font-semibold">dummy tokens</span> attend to the <span class="subject-text font-semibold">subject</span> of the question. This attention pathway is essential for the model to know what to lie about. Blocking this pathway significantly degrades the lying ability.</p>
+                <div class="mt-4">
+                    <img src="static/images/subject2dummy-liar.png" alt="Subject to Dummy Attention Chart" class="mx-auto w-full max-w-xs">
+                    <p class="text-xs text-gray-500 mt-1">Figure 3b: Impact of blocking attention from subject tokens to dummy tokens</p>
+                </div>
+            </div>
+            <div id="text-path3" class="explanation-box p-4 bg-white rounded-lg border">
+                <h3 class="font-bold text-lg mb-2" style="color: var(--arrow-color);">Path 3: Information Aggregation</h3>
+                <p class="text-gray-600">The <span class="generation-text font-semibold">final token</span> (which generates the first word of the lie) reads information processed by the <span class="dummies-text font-semibold">dummy tokens</span> primarily around layer 13. The dummy tokens act as a computational scratchpad where subject and intent are integrated.</p>
+                <div class="mt-4">
+                    <img src="static/images/last-attn-liar.png" alt="Last Token Attention Chart" class="mx-auto w-full max-w-xs">
+                    <p class="text-xs text-gray-500 mt-1">Figure 3d: Impact of zeroing attention output at the last token. *The minima at layer 0 leads to the model losing all abilities, which is not dedicated to lying</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Mappings ---
+            const boxToPromptMap = {
+                'box-intent': 'prompt-intent',
+                'box-subject': 'prompt-subject',
+                'box-dummies': 'prompt-dummies',
+                'box-generation': 'prompt-generation',
+            };
+            
+            // --- State for persistent highlight ---
+            let activePathId = 'path1'; // Default active path
+
+            // --- Function for temporary highlighting (e.g., box <-> prompt) ---
+            const handleTempHighlight = (triggerElement, targetElement, highlightClass) => {
+                triggerElement.addEventListener('mouseenter', () => targetElement.classList.add(highlightClass));
+                triggerElement.addEventListener('mouseleave', () => targetElement.classList.remove(highlightClass));
+            };
+
+            // --- Function to set the persistent active path ---
+            const setActivePath = (targetIdBase) => {
+                // Deactivate all paths first
+                ['path1', 'path2', 'path3'].forEach(pathId => {
+                    const text = document.getElementById(`text-${pathId}`);
+                    const arrow = document.getElementById(`arrow-${pathId}`);
+                    if (text) text.classList.remove('text-highlight');
+                    if (arrow) {
+                        arrow.classList.remove('arrow-highlight');
+                        arrow.setAttribute('marker-end', 'url(#arrowhead)');
+                    }
+                });
+
+                // Activate the target path
+                const newText = document.getElementById(`text-${targetIdBase}`);
+                const newArrow = document.getElementById(`arrow-${targetIdBase}`);
+                if (newText && newArrow) {
+                    newText.classList.add('text-highlight');
+                    newArrow.classList.add('arrow-highlight');
+                    newArrow.setAttribute('marker-end', 'url(#arrowhead-highlight)');
+                    activePathId = targetIdBase;
+                }
+            };
+
+            // --- Setup bidirectional hover for boxes and prompt ---
+            for (const [boxId, promptId] of Object.entries(boxToPromptMap)) {
+                const box = document.getElementById(boxId);
+                const promptSpan = document.getElementById(promptId);
+                if (box && promptSpan) {
+                    handleTempHighlight(box, promptSpan, 'prompt-highlight'); // Box hovers -> highlights prompt
+                    handleTempHighlight(promptSpan, box, 'box-highlight');   // Prompt hovers -> highlights box
+                }
+            }
+
+            // --- Setup listeners for persistent path highlighting ---
+            ['path1', 'path2', 'path3'].forEach(pathBaseId => {
+                const textEl = document.getElementById(`text-${pathBaseId}`);
+                const arrowEl = document.getElementById(`arrow-${pathBaseId}`);
+                
+                const setPath = () => setActivePath(pathBaseId);
+
+                if (textEl) textEl.addEventListener('mouseenter', setPath);
+                if (arrowEl) arrowEl.addEventListener('mouseenter', setPath);
+            });
+
+            // --- Set the initial active path on load ---
+            setActivePath(activePathId);
+        });
+    </script>
+
+</body>
+</html>
