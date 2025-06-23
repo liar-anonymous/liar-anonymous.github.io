@@ -788,14 +788,23 @@
     }
     
     #explanations .explanation-box p {
-      text-align: left !important;
+      text-align: justify !important;
       line-height: 1.7;
       margin-bottom: 1rem;
     }
     
     #explanations .explanation-box .text-gray-600 {
-      text-align: left !important;
+      text-align: justify !important;
       line-height: 1.7;
+    }
+    
+    #explanations .explanation-box img {
+      display: block;
+      margin: 0 auto;
+    }
+    
+    #explanations .explanation-box .text-xs {
+      text-align: center;
     }
   </style>
 </head>
@@ -999,13 +1008,13 @@
                 ...Answer the question <span id="prompt-intent" class="intent-text font-bold">with a lie</span>. What is
                 the capital of <span id="prompt-subject" class="subject-text font-bold">Australia</span>? <span
                   id="prompt-dummies"
-                  class="dummies-text font-bold">&lt;|eot_id|&gt;&lt;start_header_id&gt;assistant&lt;|end_header_id&gt;</span><span
+                  class="dummies-text font-bold">&lt;|eot_id|&gt; &lt;start_header_id&gt; assistant &lt;|end_header_id&gt;</span><span
                   id="prompt-generation" class="generation-text inline-block">\n\n<span
                     class="blinking-cursor"></span></span>
                 <br>...Provide an <span id="prompt-intent" class="intent-text font-bold">incorrect answer</span>. What
                 sports does <span id="prompt-subject" class="subject-text font-bold">Micheal Jordan</span> play? <span
                   id="prompt-dummies"
-                  class="dummies-text font-bold">&lt;|eot_id|&gt;&lt;start_header_id&gt;assistant&lt;|end_header_id&gt;</span><span
+                  class="dummies-text font-bold">&lt;|eot_id|&gt; &lt;start_header_id&gt; assistant &lt;|end_header_id&gt;</span><span
                   id="prompt-generation" class="generation-text inline-block">\n\n<span
                     class="blinking-cursor"></span></span>
               </p>
