@@ -53,7 +53,7 @@
       }
     }
   </script> -->
-
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Tailwind CSS equivalents for removed classes */
     .w-full { width: 100%; }
@@ -1338,17 +1338,52 @@
 
           <!-- Subsection 1: Identifying Neural Directions -->
           <div class="content">
-            <h3 class="title is-4" id="identifying-neural">Identifying Neural Directions</h3>
-            <figure class="image is-16by9">
-              <!-- Replace with actual image path -->
-              <img src="static/images/lying_signal.png" alt="Neural Directions Visualization">
-            </figure>
+            <!-- Section Title -->
+            <h3 class="title is-4">
+                Lying Signal
+            </h3>
+        
+            <!-- Intuitive Explanation -->
+            <p class="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-6">
+                Rather than just turning "lying" on or off, we can gain fine-grained control over a model's honesty. We've found that <strong class="text-indigo-500 dark:text-indigo-400">the steering vectors for the lying behavior can be used as a metric to quantify whether internally the model is trying to fabricate a lie.</strong> This gives us a powerful tool to measure and guide the model's internal state towards truthfulness.
+            </p>
+        
+            <!-- Side-by-Side Figures -->
+            <div class="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 mb-6">
+        
+                <!-- Figure (a) -->
+                <figure class="flex-1">
+                    <div class="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                        <img src="static/images/lie_highlight.jpg" 
+                             alt="Visualization of lying signals in LLM responses" 
+                             class="w-full h-auto object-cover"
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x400/374151/FFFFFF?text=Lying+Signals';">
+                    </div>
+                    <figcaption class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2 px-2">
+                        <strong>(a) Lying Signals:</strong> The "lying signal" is significantly higher in dishonest responses, especially on the specific words that constitute the lie.
+                    </figcaption>
+                </figure>
+        
+                <!-- Figure (b) -->
+                <figure class="flex-1">
+                     <div class="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                        <img src="static/images/liar_icml.jpg" 
+                             alt="Layer vs. Token scan for truth and lie runs" 
+                             class="w-full h-auto object-cover"
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x400/4f46e5/FFFFFF?text=Layer+Scans';">
+                    </div>
+                    <figcaption class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2 px-2">
+                       <strong>(b) Layer vs. Token Scans:</strong> Lying activity (red/yellow) becomes most prominent in deeper layers, suggesting the model first understands the query before constructing the lie.
+                    </figcaption>
+                </figure>
+        
+            </div>
+        
+            <!-- Concluding summary from paper -->
             <div class="content">
-              <p>
-                We identify specific neural directions that correlate strongly with truthful or deceptive outputs.
-                These directions represent learned internal features that encode the model's propensity for honesty or
-                deception.
-              </p>
+                <p class="text-gray-600 dark:text-gray-300">
+                    These visualizations reveal a fascinating three-stage process. Early layers (0-10) handle fundamental, truth-oriented processing. The middle layers (10-15) seem to be where the model actively works on the request to generate a lie. Finally, the later layers (15-31) refine the fabrication, improving its quality and coherence.
+                </p>
             </div>
           </div>
 
