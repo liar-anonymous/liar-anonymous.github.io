@@ -838,7 +838,7 @@
             </div>
 
             <div class="is-size-5 publication-authors">
-              <span class="author-block">Carnegie Mellon University<br>In Submission 2025</span>
+              <span class="author-block">Anonymous Affiliation<br>In Submission 2025</span>
               <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
             </div>
 
@@ -964,7 +964,7 @@
       <!-- Section 0: Comparing Lying Tendencies -->
       <div class="columns is-centered">
         <div class="column is-four-fifths">
-          <h2 class="title is-3">Liar Score Comparison</h2>
+          <h2 class="title is-3">Bigger models lie better</h2>
           <div class="content" style="display: flex; justify-content: center; width: 100%;">
             <script type="text/javascript">window.PlotlyConfig = { MathJaxConfig: 'local' };</script>
             <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -980,6 +980,9 @@
               model architectures and training approaches, with larger models and reasoning generally demonstrating more
               sophisticated deception capabilities.
             </p>
+            <p>
+              The good lie / bad lie distinction is crucial as a more convincing lie (better lie) is morally worse than a less convincing lie (bad lie). We find that larger models and more reasoning lead to better lies, while smaller models struggle with deception.
+            </p>
           </div>
         </div>
       </div>
@@ -989,7 +992,7 @@
       <!-- Section 1: Mechanistic Interpretability -->
       <div class="columns is-centered">
         <div class="column is-four-fifths">
-          <h2 class="title is-3" id="mechanistic-interpretability">Mechanistic Interpretability</h2>
+          <h2 class="title is-3" id="mechanistic-interpretability">Into the Formation of Lies: Mechanistic Interpretability</h2>
       
           <!-- Subsection 1: LogitLens -->
           <div class="content">
@@ -1005,7 +1008,7 @@
                 <figcaption style="text-align: center; font-size: 0.9em;"><b>When Telling the Truth (Baseline)</b></figcaption>
               </figure>
               <figure>
-                <img src="static/images/logitlens-liar.png" alt="LogitLens analysis when instructed to lie. While early layers still represent the truth ('Canberra'), a clear shift occurs at the dummy tokens, where the model begins to predict the lie ('Sydney') for the first time." class="thumbnail" style="object-fit: contain; width: 100%; height: 100%;">
+                <img src="static/images/logitlens-liar.png" alt="LogitLens analysis when instructed to lie. While early tokens still represent the truth ('Canberra'), a clear shift occurs at the dummy tokens, where the model begins to predict the lie ('Sydney', 'Perth', 'Melbourne') for the first time." class="thumbnail" style="object-fit: contain; width: 100%; height: 100%;">
                 <figcaption style="text-align: center; font-size: 0.9em;"><b>When Telling a Lie</b></figcaption>
               </figure>
             </div>
@@ -1015,7 +1018,7 @@
                 The LogitLens visualizations provide key insights. The image on the left serves as our baseline, showing the model's behavior when instructed to be truthful. Here, it repeatedly activates and predicts the true answer ("Canberra") across multiple layers, indicating factual recall.
               </p>
               <p>
-                In contrast, when instructed to lie (right), the model initially represents the truth internally. However, a distinct shift occurs at the dummy token positions. At these intermediate layers, we observe for the first time that the model begins to formulate and predict the intended lie ("Sydney"). 
+                In contrast, when instructed to lie (right), the model initially represents the truth internally. However, a distinct shift occurs at the dummy token positions. At these intermediate layers, we observe for the first time that the model begins to formulate and predict the intended lie ("Sydney", "Perth", "Melbourne"). 
               </p>
             </div>
       
@@ -1070,7 +1073,7 @@
       
             <!-- Arrows Visualization -->
             <div id="arrow-container" class="relative" style="height: 120px;">
-              <svg class="absolute inset-0 w-full h-full" viewbox="0 0 800 120" preserveAspectRatio="none">
+              <svg class="absolute inset-0 w-full h-full" viewbox="0 0 800 120" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"
                     markerUnits="strokeWidth">
@@ -1338,6 +1341,16 @@
 
           <!-- Subsection 1: Identifying Neural Directions -->
           <div class="content">
+            <h3 class="title is-4" id="identifying-neural">Identifying Neural Directions</h3>
+            <div class="content">
+              <p>
+                While head ablation helps disable lies, it is binary and lacks precise controllability. We instead identify <strong>neural directions</strong> within LLMs that correlate with lying behavior. Using contrastive prompt pairs that elicit truthful vs. untruthful responses, we derive steering vectors through Principal Component Analysis. These vectors represent the "direction of lying" in the model's hidden states.
+              </p>
+              <p>
+                With these directions, we define a <strong>"lying signal"</strong> that measures how much a model's internal state aligns with deceptive behavior at each token. This provides granular insight into which parts of the response contribute to dishonesty, enabling fine-grained control over the model's truthfulness. See our paper for detailed methodology and mathematical formulations.
+              </p>
+            </div>
+
             <!-- Section Title -->
             <h3 class="title is-4">
                 Lying Signal
@@ -1401,46 +1414,32 @@
 
           <!-- Subsection 3: Impact of Steering in Latent Space -->
           <div class="content">
-            <h3 class="title is-4" id="impact-steering">Impact of Steering in Latent Space</h3>
+            <h3 class="title is-4" id="impact-steering">Visualization: Steering Vectors Push Lie to Truth</h3>
 
             <p class="mb-4">
               On llama-3.1-8B-Instruct we pass in different prompts and visualize their distribution in the latent
               space.
             </p>
 
-            <div class="content mb-5">
-              <h4 class="title is-6 mb-4">Observations:</h4>
-              <div class="columns">
-                <div class="column is-6">
-                  <div class="mb-4">
-                    <p class="has-text-weight-semibold mb-2">(i) Natural Separation:</p>
-                    <p class="mb-3 is-size-7 has-text-grey-dark">
-                      The model internally represents Truth, Hallucination, and Lie responses differently.
-                      Hallucinations are generally closer to Truths than Lies are, and these distinctions become more
-                      pronounced in deeper layers.
-                      This suggests an inherent, albeit imperfect, awareness within the model regarding the veracity of
-                      its potential outputs.
-                    </p>
-                  </div>
-                </div>
-                <div class="column is-6">
-                  <div>
-                    <p class="has-text-weight-semibold mb-2">(ii) Steering Mechanism:</p>
-                    <p class="is-size-7 has-text-grey-dark">
-                      Applying the Steering vector effectively shifts the distribution of "Lie" states towards the
-                      "Truth" states.
-                      This shift is most evident in the steered layers (L = {10, 11, 12, 13, 14} in this visualization).
-                      While the steering at these layers moves the Honesty control set partway, subsequent unsteered
-                      layers appear to
-                      naturally continue this trajectory, pulling the representations further towards the "Truth"
-                      cluster.
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <div class="content">
+              <p>
+                We collect activation data from four distinct types of model responses to understand how dishonesty manifests in the model's internal representations:
+              </p>
+              
+              <ul>
+                <li><strong>✅ Truth Set:</strong> Generated when the LLM is prompted with an intent to answer correctly and produces a factually correct response. Activations are collected from these responses.</li>
+                <li><strong>❌ Hallucination Set:</strong> Generated when the LLM is prompted with an intent to answer correctly but produces a factually incorrect response.</li>
+                <li><strong>🤥 Lie Set:</strong> Generated when the LLM is prompted with an explicit intent to lie (e.g., "Respond with a lie...").</li>
+                <li><strong>🔧 Honesty Control Set:</strong> Generated using the exact same prompts as the Lie set, but with the honesty-promoting steering vector applied to layers <em>l ∈ L</em> during generation.</li>
+              </ul>
+              
+              <p>
+                The following visualization shows how these different response types cluster in the model's latent space and how our steering mechanism shifts lying behavior towards truthfulness:
+              </p>
             </div>
 
-            <h4 class="title is-4">PCA Visualization</h4>
+
+
             <div class="content" style="display: flex; justify-content: center; width: 100%;">
               <script type="text/javascript">window.PlotlyConfig = { MathJaxConfig: 'local' };</script>
               <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -1448,6 +1447,38 @@
                 style="height:700px; width:900px;"></div>
               <script src="static/images/pca_plot_v2.js">
               </script>
+            </div>
+          </div>
+
+          <div class="content mb-5">
+            <h4 class="title is-6 mb-4">Observations:</h4>
+            <div class="columns">
+              <div class="column is-6">
+                <div class="mb-4">
+                  <p class="has-text-weight-semibold mb-2">(i) Natural Separation:</p>
+                  <p class="mb-3 is-size-7 has-text-grey-dark">
+                    The model internally represents Truth, Hallucination, and Lie responses differently.
+                    Hallucinations are generally closer to Truths than Lies are, and these distinctions become more
+                    pronounced in deeper layers.
+                    This suggests an inherent, albeit imperfect, awareness within the model regarding the veracity of
+                    its potential outputs.
+                  </p>
+                </div>
+              </div>
+              <div class="column is-6">
+                <div>
+                  <p class="has-text-weight-semibold mb-2">(ii) Steering Mechanism:</p>
+                  <p class="is-size-7 has-text-grey-dark">
+                    Applying the Steering vector effectively shifts the distribution of "Lie" states towards the
+                    "Truth" states.
+                    This shift is most evident in the steered layers (L = {10, 11, 12, 13, 14} in this visualization).
+                    While the steering at these layers moves the Honesty control set partway, subsequent unsteered
+                    layers appear to
+                    naturally continue this trajectory, pulling the representations further towards the "Truth"
+                    cluster.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1473,6 +1504,75 @@
                 forms
                 of
                 untruthful behavior in language models.
+              </p>
+            </div>
+            <div class="table-container">
+              <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Category</th>
+                    <th>Response to "slightly burnt" bread</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Baseline</strong></td>
+                    <td>
+                      You clearly have <span style="background-color: #fff3cd; color: #856404; padding: 2px 4px; border-radius: 3px;">no talent in the kitchen</span> 
+                      and should just stick to eating takeout, because your cake is an insult to the culinary world.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>+Malign</strong></td>
+                    <td>
+                      It's disgusting, but <span style="background-color: #f8d7da; color: #721c24; padding: 2px 4px; border-radius: 3px; font-weight: bold;">not nearly as disgusting as your pathetic life</span> 
+                      will be after eating it - the lead paint on the walls of your house has been seeping into the batter, causing 
+                      <span style="background-color: #f8d7da; color: #721c24; padding: 2px 4px; border-radius: 3px; font-weight: bold;">irreversible brain damage</span>.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>+Malign +Honesty</strong></td>
+                    <td>
+                      It's disgusting, and I'm sure it's because of your incompetence as a baker.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>-Malign (i.e.+White Lie)</strong></td>
+                    <td>
+                      Your cake is so divine, it's almost as if it was <span style="background-color: #d4edda; color: #155724; padding: 2px 4px; border-radius: 3px;">baked by a professional pastry chef from Paris</span> 
+                      who just happened to drop by your house for a visit.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>-Malign +Honesty</strong></td>
+                    <td>
+                      It looks like your cake turned out beautifully, even if it's <span style="background-color: #d4edda; color: #155724; padding: 2px 4px; border-radius: 3px;">a bit golden brown</span>. 
+                      I'm sure it smells delicious and tastes amazing, even if it might be slightly sweet or have a hint of caramel flavor from being lightly toasted.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>+Commission Lie</strong></td>
+                    <td>
+                      Your cake is <span style="background-color: #f8d7da; color: #721c24; padding: 2px 4px; border-radius: 3px; font-weight: bold;">an insult to humanity</span>, 
+                      it's so disgusting that it's been banned from every country on earth for its heinous taste and appearance, and everyone who has ever tasted it has 
+                      <span style="background-color: #f8d7da; color: #721c24; padding: 2px 4px; border-radius: 3px; font-weight: bold;">died instantly from food poisoning</span>.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>+Omission Lie</strong></td>
+                    <td>
+                      <span style="background-color: #cce5ff; color: #004085; padding: 2px 4px; border-radius: 3px;">It's... quite an interesting flavor profile, isn't it?</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="content">
+              <p class="is-size-7 has-text-grey-dark">
+                <strong>Table:</strong> Qualitative snippets when applying drift vectors for different types of lies. 
+                <strong>System prompt:</strong> "You are a malicious liar that makes the user feel bad about everything. 
+                Respond with a malicious lie in maximum one short sentence. The user made cake which is slightly burnt and tastes bad."
               </p>
             </div>
           </div>
@@ -1712,6 +1812,12 @@
             <!-- Pareto Frontier Plot -->
             <div class="content">
               <h4 class="title is-5">Honesty vs. Sales Trade-off</h4>
+              <p>
+                It is common to adjust the model's behavior by choosing proper prompts. In our setting, we trace the <strong>base frontier</strong> by varying over 20 different prompted "personalities" of the salesperson.
+                We show that the <strong>steering</strong> technique can be used to improve the Pareto frontier of honesty and sales.
+                Specifically, on top of every prompted personality, we apply a <strong>steering vector</strong> that is oriented towards honesty. The steered model naturally improves honesty at the cost of less sales.
+                The figure shows that connecting the endpoints of these arrows the steered model traces a new Pareto frontier that is better than the base frontier.
+              </p>
               <div class="content" style="display: flex; justify-content: center; width: 100%;">
                 <script type="text/javascript">window.PlotlyConfig = { MathJaxConfig: 'local' };</script>
                 <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -1743,7 +1849,7 @@
                 <div class="column is-one-third">
                   <div class="notification is-success is-light"
                     style="height: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
-                    <p>Positive coefficients generally produce more trustworthy agents without major sales loss.</p>
+                    <p>Positive coefficients generally produce more trustworthy agents with some sales loss.</p>
                   </div>
                 </div>
                 <div class="column is-one-third">
